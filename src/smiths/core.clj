@@ -1,6 +1,7 @@
 (ns smiths.core
   (:use [clj-time.core :only (minus now hours minutes)])
-  (:use [clj-time.periodic :only (periodic-seq)]))
+  (:use [clj-time.periodic :only (periodic-seq)])
+  (:use [clojure.data.generators :only (weighted)]))
 
 (def interval-between-events (minutes 1))
 
