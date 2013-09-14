@@ -4,15 +4,15 @@
 
 (def interval-between-events (minutes 1))
 
-(defn generate-device-event [deviceId timestamp]
-  {:event-type "Application installed"
+(defn generate-device-event [device timestamp]
+  {:event-type "Application added"
    :application-name "Orca"
    :executables ["C:\\Program Files\\Orca\\Orca.exe"]
-   :deviceId deviceId
+   :deviceId (:id device)
    :timestamp timestamp})
 
 (defn generate-device-events [start interval]
-  (map #(generate-device-event "dev1" %) (periodic-seq start interval)))
+  (map #(generate-device-event {:id "dev1"} %) (periodic-seq start interval)))
 
 (defn -main []
-  (time (take 10 (generate-device-events (minus (now) (hours 1)) (minutes 15)))))
+  (println (generate-device-events (minus (now) (hours 1)) interval-between-events)))
