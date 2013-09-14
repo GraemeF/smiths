@@ -1,20 +1,28 @@
 (ns smiths.core
   (:use [clj-time.core :only (minus now hours minutes)])
   (:use [clj-time.periodic :only (periodic-seq)])
-  (:use [clojure.data.generators :only (weighted)]))
+  (:use [clojure.data.generators :only (string geometric printable-ascii-char weighted)]))
 
 (def interval-between-events (minutes 1))
 
+(defn geometric-sizer
+  [mean-size]
+  #(dec (geometric (/ 1 mean-size))))
+
+(defn generate-application []
+  {:manufacturer (string printable-ascii-char (geometric-sizer 40))
+   :name (string printable-ascii-char (geometric-sizer 50))
+   :version (string printable-ascii-char (geometric-sizer 8))})
+
 (defn generate-application-added-event [device timestamp]
   {:event-type "Application added"
-   :application-name "Orca"
-   :executables ["C:\\Program Files\\Orca\\Orca.exe"]
+   :application (generate-application)
    :deviceId (:id device)
    :timestamp timestamp})
 
 (defn generate-application-removed-event [device timestamp]
   {:event-type "Application removed"
-   :application-name "Orca"
+   :application (generate-application)
    :deviceId (:id device)
    :timestamp timestamp})
 
