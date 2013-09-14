@@ -12,8 +12,15 @@
    :deviceId (:id device)
    :timestamp timestamp})
 
+(defn generate-application-removed-event [device timestamp]
+  {:event-type "Application removed"
+   :application-name "Orca"
+   :deviceId (:id device)
+   :timestamp timestamp})
+
 (def weighted-events
-  {generate-application-added-event 1})
+  {generate-application-added-event 2
+   generate-application-removed-event 1})
 
 (defn create-weighted-generator [entry device timestamp]
   (first {#((key entry) device timestamp) (val entry)}))
