@@ -32,4 +32,6 @@
   (map #(generate-weighted-event {:id "dev1"} %) (periodic-seq start interval)))
 
 (defn -main []
-  (println (generate-device-events (minus (now) (hours 1)) interval-between-events)))
+  (println (map #(str % \newline)
+                (generate-device-events (minus (now) (hours 1)) 
+                                        interval-between-events))))
