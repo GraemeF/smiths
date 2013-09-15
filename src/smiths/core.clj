@@ -44,5 +44,5 @@
           (periodic-seq start interval)))
 
 (defn -main []
-  (dorun (simulate-estate (minus (now) (hours 1)) 
-                          interval-between-events)))
+  (simulate-estate (minus (now) (hours 1)) 
+                   interval-between-events))
