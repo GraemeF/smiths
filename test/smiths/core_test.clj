@@ -2,14 +2,7 @@
   (:use midje.sweet)
   (:require [smiths.core :refer :all]))
 
-(facts "about `first-element`"
-  (fact "it normally returns the first element"
-    (first-element [1 2 3] :default) => 1
-    (first-element '(1 2 3) :default) => 1)
-
-  ;; I'm a little unsure how Clojure types map onto the Lisp I'm used to.
-  (fact "default value is returned for empty sequences"
-    (first-element [] :default) => :default
-    (first-element '() :default) => :default
-    (first-element nil :default) => :default
-    (first-element (filter even? [1 3 5]) :default) => :default))
+(facts "about `generate-application-added-event`"
+  (fact "it adds an application to the device"
+    (generate-application-added-event {:applications #{}} #inst "2000") 
+        => #(= 1 (count (:applications %)))))

@@ -23,11 +23,12 @@
    :version (string printable-ascii-char (geometric-sizer 8))})
 
 (defn generate-application-added-event [device timestamp]
-  (emit-event {:event-type "Application added"
-               :application (generate-application)
-               :deviceId (:id device)
-               :timestamp timestamp})
-  device)
+  (let [app (generate-application)]
+    (emit-event {:event-type "Application added"
+                 :application app
+                 :deviceId (:id device)
+                 :timestamp timestamp})
+    (assoc device :applications (conj (:applications device) app))))
 
 (defn generate-application-removed-event [device timestamp]
   (emit-event {:event-type "Application removed"
