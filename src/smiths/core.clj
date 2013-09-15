@@ -35,10 +35,12 @@
 (defn change-estate [estate timestamp]
   (weighted (map #(create-weighted-generator % (first (:devices estate)) timestamp) weighted-events)))
 
+(def empty-estate {:applications #{}
+                   :devices #{{:id "foo"}}
+                   :users #{}})
+
 (defn simulate-estate [start interval]
-  (reduce change-estate {:applications #{}
-                         :devices #{{:id "foo"}}
-                         :users #{}}
+  (reduce change-estate empty-estate
           (periodic-seq start interval)))
 
 (defn -main []
