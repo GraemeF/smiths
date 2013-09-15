@@ -35,9 +35,9 @@
 (defn generate-weighted-event [device timestamp]
   (weighted (map #(create-weighted-generator % device timestamp) weighted-events)))
 
-(defn generate-device-events [start interval]
+(defn simulate-estate [start interval]
   (map #(generate-weighted-event {:id "dev1"} %) (periodic-seq start interval)))
 
 (defn -main []
-  (dorun (generate-device-events (minus (now) (hours 1)) 
-                                 interval-between-events)))
+  (dorun (simulate-estate (minus (now) (hours 1)) 
+                          interval-between-events)))
