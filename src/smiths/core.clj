@@ -1,17 +1,18 @@
 (ns smiths.core
-  (:use [clj-time.core :only (minus now hours minutes)])
-  (:use [clj-time.periodic :only (periodic-seq)])
-  (:use [smiths.application :only (generate-application)])
-  (:use [clojure.data.generators :only (weighted)])
-  (:use [clojurewerkz.eep.emitter :only (defobserver notify create)]))
+  (:require [clj-time.core :refer [minus now hours minutes]])
+  (:require [clj-time.periodic :refer [periodic-seq]])
+  (:require [smiths.application :refer [generate-application]])
+  (:require [clojure.data.generators :as gen])
+  (:require [clojurewerkz.eep.emitter :refer [defobserver notify create]]))
 
 (defn emit-event [event]
   (println event))
 
 (def interval-between-events (minutes 1))
 
-(defn generate-application-added-event [device timestamp]
-  (let [app (generate-application)]
+(defn add-application-to-device [estate timestamp]
+  (let [app (gen/one-of (conj (:applications estate) generate-application))
+        device (gen/one-of (:devices estate))]
     (emit-event {:event-type "Application added"
                  :application app
                  :deviceId (:id device)
@@ -26,22 +27,25 @@
   device)
 
 (def weighted-events
-  {generate-application-added-event 2
+  {add-application-to-device 2
    generate-application-removed-event 1})
 
 (defn create-weighted-generator [entry device timestamp]
   (first {#((key entry) device timestamp) (val entry)}))
 
 (defn change-estate [estate timestamp]
-  (weighted (map #(create-weighted-generator % (first (:devices estate)) timestamp) weighted-events)))
+  (gen/weighted (map #(create-weighted-generator %
+                                                 estate
+                                                 timestamp) 
+                     weighted-events)))
 
-(def empty-estate {:applications #{}
+(def empty-estate {:applications #{{:FOO "BAR!"}}
                    :devices #{{:id "foo"}}
                    :users #{}})
 
 (defn simulate-estate [start interval]
   (reduce change-estate empty-estate
-          (periodic-seq start interval)))
+          (take 5 (periodic-seq start interval))))
 
 (defn -main []
   (simulate-estate (minus (now) (hours 1)) 

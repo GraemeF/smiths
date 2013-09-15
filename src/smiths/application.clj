@@ -1,5 +1,5 @@
 (ns smiths.application
-  (:use [clojure.data.generators :only (string geometric printable-ascii-char weighted)]))
+  (:require [clojure.data.generators :refer [string geometric printable-ascii-char weighted]]))
 
 (defn geometric-sizer
   [mean-size]

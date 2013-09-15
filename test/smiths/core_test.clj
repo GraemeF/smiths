@@ -1,8 +1,8 @@
 (ns smiths.core-test
-  (:use midje.sweet)
+  (:require [midje.sweet :refer [facts fact]])
   (:require [smiths.core :refer :all]))
 
-(facts "about `generate-application-added-event`"
+(facts "about `add-application-to-device`"
        (fact "it adds an application to the device"
-             (generate-application-added-event {:applications #{}} #inst "2000") 
+             (add-application-to-device {:applications #{}} #inst "2000") 
              => #(= 1 (count (:applications %)))))
