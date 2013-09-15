@@ -32,11 +32,14 @@
 (defn create-weighted-generator [entry device timestamp]
   (first {#((key entry) device timestamp) (val entry)}))
 
-(defn generate-weighted-event [device timestamp]
-  (weighted (map #(create-weighted-generator % device timestamp) weighted-events)))
+(defn change-estate [estate timestamp]
+  (weighted (map #(create-weighted-generator % (first (:devices estate)) timestamp) weighted-events)))
 
 (defn simulate-estate [start interval]
-  (map #(generate-weighted-event {:id "dev1"} %) (periodic-seq start interval)))
+  (reduce change-estate {:applications #{}
+                         :devices #{{:id "foo"}}
+                         :users #{}}
+          (periodic-seq start interval)))
 
 (defn -main []
   (dorun (simulate-estate (minus (now) (hours 1)) 
