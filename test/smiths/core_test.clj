@@ -3,6 +3,8 @@
   (:require [smiths.core :refer :all]))
 
 (facts "about `add-application-to-device`"
-       (fact "it adds an application to the device"
-             (add-application-to-device {:applications #{}} #inst "2000") 
+       (fact "it adds an application to the estate"
+             (add-application-to-device {:devices #{} 
+                                         :applications #{}
+                                         :instances #{}} #inst "2000") 
              => #(= 1 (count (:applications %)))))
