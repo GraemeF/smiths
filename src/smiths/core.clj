@@ -1,7 +1,15 @@
 (ns smiths.core
   (:use [clj-time.core :only (minus now hours minutes)])
   (:use [clj-time.periodic :only (periodic-seq)])
-  (:use [clojure.data.generators :only (string geometric printable-ascii-char weighted)]))
+  (:use [clojure.data.generators :only (string geometric printable-ascii-char weighted)])
+  (:use [clojurewerkz.eep.emitter :only (defobserver notify create)]))
+
+(def emitter (create :dispatcher-type :ring-buffer))
+
+(defobserver emitter :event (fn [e] (println e)))
+
+(defn emit-event [event]
+  (notify emitter :event event))
 
 (def interval-between-events (minutes 1))
 
@@ -15,16 +23,18 @@
    :version (string printable-ascii-char (geometric-sizer 8))})
 
 (defn generate-application-added-event [device timestamp]
-  {:event-type "Application added"
-   :application (generate-application)
-   :deviceId (:id device)
-   :timestamp timestamp})
+  (emit-event {:event-type "Application added"
+               :application (generate-application)
+               :deviceId (:id device)
+               :timestamp timestamp})
+  device)
 
 (defn generate-application-removed-event [device timestamp]
-  {:event-type "Application removed"
-   :application (generate-application)
-   :deviceId (:id device)
-   :timestamp timestamp})
+  (emit-event {:event-type "Application removed"
+               :application (generate-application)
+               :deviceId (:id device)
+               :timestamp timestamp})
+  device)
 
 (def weighted-events
   {generate-application-added-event 2
@@ -40,6 +50,5 @@
   (map #(generate-weighted-event {:id "dev1"} %) (periodic-seq start interval)))
 
 (defn -main []
-  (println (map #(str % \newline)
-                (generate-device-events (minus (now) (hours 1)) 
-                                        interval-between-events))))
+  (dorun (generate-device-events (minus (now) (hours 1)) 
+                                 interval-between-events)))
