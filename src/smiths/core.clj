@@ -1,26 +1,14 @@
 (ns smiths.core
   (:use [clj-time.core :only (minus now hours minutes)])
   (:use [clj-time.periodic :only (periodic-seq)])
-  (:use [clojure.data.generators :only (string geometric printable-ascii-char weighted)])
+  (:use [smiths.application :only (generate-application)])
+  (:use [clojure.data.generators :only (weighted)])
   (:use [clojurewerkz.eep.emitter :only (defobserver notify create)]))
 
-(def emitter (create :dispatcher-type :ring-buffer))
-
-(defobserver emitter :event (fn [e] (println e)))
-
 (defn emit-event [event]
-  (notify emitter :event event))
+  (println event))
 
 (def interval-between-events (minutes 1))
-
-(defn geometric-sizer
-  [mean-size]
-  #(dec (geometric (/ 1 mean-size))))
-
-(defn generate-application []
-  {:manufacturer (string printable-ascii-char (geometric-sizer 40))
-   :name (string printable-ascii-char (geometric-sizer 50))
-   :version (string printable-ascii-char (geometric-sizer 8))})
 
 (defn generate-application-added-event [device timestamp]
   (let [app (generate-application)]
