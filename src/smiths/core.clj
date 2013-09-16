@@ -47,24 +47,28 @@
   (first {#((key entry) estate timestamp) (val entry)}))
 
 (defn print-stats [estate]
-  (println (count (:applications estate)) "applications," (count (:devices estate)) "devices, and" (count (:instances estate)) "instances."))
+  (println (:event-count estate) "events comprising" (count (:applications estate)) "applications," (count (:devices estate)) "devices, and" (count (:instances estate)) "instances.")
+  estate)
 
 (defn change-estate [estate timestamp]
-  (print-stats estate)
-  (gen/weighted (map #(create-weighted-generator %
-                                                 estate
-                                                 timestamp) 
-                     weighted-events)))
+  (when (= 0 (mod (:event-count estate) 10000))
+    (print-stats estate))
+  (let [changed-estate (gen/weighted (map #(create-weighted-generator %
+                                                                      estate
+                                                                      timestamp) 
+                                          weighted-events))]
+    (assoc changed-estate :event-count (+ 1 (:event-count changed-estate)))))
 
-(def empty-estate {:applications {}
+(def empty-estate {:event-count 0
+                   :applications {}
                    :devices {}
                    :instances {}
                    :users {}})
 
 (defn simulate-estate [start interval]
   (reduce change-estate empty-estate
-          (take 500 (periodic-seq start interval))))
+          (take 1000000 (periodic-seq start interval))))
 
 (defn -main []
-  (print-stats (simulate-estate (minus (now) (hours 1)) 
-                                interval-between-events)))
+  (print-stats (time (simulate-estate (minus (now) (hours 1)) 
+                                      interval-between-events))))
