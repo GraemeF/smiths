@@ -15,28 +15,29 @@
 (def interval-between-events (minutes 1))
 
 (defn add-application-to-device [estate timestamp]
-  (let [instance {:application (rand-nth (conj (:applications estate) (generate-application)))
-                  :device (rand-nth (union (:devices estate) (generate-device)))}]
+  (println (class (:applications estate)))
+  (let [instance {:application (rand-nth (keys (conj (:applications estate) (generate-application))))
+                  :device (rand-nth (keys (conj (:devices estate) (generate-device))))}]
     (emit-event {:event-type "Application added"
                  :application (:application instance)
                  :device (:device instance)
                  :timestamp timestamp})
     (assoc estate 
-           :instances (union (:instances estate) #{instance})
-           :applications (union (:applications estate) #{(:application instance)})
-           :devices (union (:devices estate) #{(:device instance)}))))
+           :instances (union (:instances estate) {instance instance})
+           :applications (union (:applications estate) {(:application instance)(:application instance)})
+           :devices (union (:devices estate) {(:device instance)(:device instance)}))))
 
 (defn remove-application-from-device [estate timestamp]
   (println "Estate" estate timestamp)
   (println "Instances" (:instances estate))
-  (let [instance (rand-nth (:instances estate))]
+  (let [instance (rand-nth (keys (:instances estate)))]
     (emit-event {:event-type "Application removed"
                  :application (:application instance)
                  :deviceId (:device instance)
                  :timestamp timestamp})
     (println "Removing" instance "from" estate)
     (let [result (assoc estate
-           :instances (disj (:instances estate) instance))]
+                        :instances (dissoc (:instances estate) instance))]
       (pprint result)
       result)))
 
@@ -57,10 +58,10 @@
                                                  timestamp) 
                      weighted-events)))
 
-(def empty-estate {:applications #{}
-                   :devices #{}
-                   :instances #{}
-                   :users #{}})
+(def empty-estate {:applications {}
+                   :devices {}
+                   :instances {}
+                   :users {}})
 
 (defn simulate-estate [start interval]
   (reduce change-estate empty-estate
