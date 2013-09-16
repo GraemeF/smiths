@@ -9,31 +9,36 @@
   (:require [clojurewerkz.eep.emitter :refer [defobserver notify create]]))
 
 (defn emit-event [event]
-  (println (pprint event)))
+  ;;(println (pprint event)))
+  )
 
 (def interval-between-events (minutes 1))
 
 (defn add-application-to-device [estate timestamp]
-  (let [instance {:application (gen/one-of (union (:applications estate) #{(generate-application)}))
-                  :device (gen/one-of (union (:devices estate) (generate-device)))}]
+  (let [instance {:application (rand-nth (conj (:applications estate) (generate-application)))
+                  :device (rand-nth (union (:devices estate) (generate-device)))}]
     (emit-event {:event-type "Application added"
                  :application (:application instance)
                  :device (:device instance)
                  :timestamp timestamp})
-    (println "ADDING" instance)
     (assoc estate 
            :instances (union (:instances estate) #{instance})
            :applications (union (:applications estate) #{(:application instance)})
            :devices (union (:devices estate) #{(:device instance)}))))
 
 (defn remove-application-from-device [estate timestamp]
-  (let [instance (gen/one-of (:instances estate))]
+  (println "Estate" estate timestamp)
+  (println "Instances" (:instances estate))
+  (let [instance (rand-nth (:instances estate))]
     (emit-event {:event-type "Application removed"
                  :application (:application instance)
                  :deviceId (:device instance)
                  :timestamp timestamp})
-    (assoc estate
-           :instances (disj (:instances estate) instance))))
+    (println "Removing" instance "from" estate)
+    (let [result (assoc estate
+           :instances (disj (:instances estate) instance))]
+      (pprint result)
+      result)))
 
 (def weighted-events
   {add-application-to-device 2
@@ -43,10 +48,9 @@
   (first {#((key entry) estate timestamp) (val entry)}))
 
 (defn print-stats [estate]
-  (println (count (:applications estate)) "applications," (count (:devices estate)) "devices, and" (count (:instances estate)) "instances." \newline))
+  (println (count (:applications estate)) "applications," (count (:devices estate)) "devices, and" (count (:instances estate)) "instances."))
 
 (defn change-estate [estate timestamp]
-  (println \newline \newline "Estate:" (pprint estate))
   (print-stats estate)
   (gen/weighted (map #(create-weighted-generator %
                                                  estate
@@ -60,8 +64,8 @@
 
 (defn simulate-estate [start interval]
   (reduce change-estate empty-estate
-          (take 5 (periodic-seq start interval))))
+          (take 500 (periodic-seq start interval))))
 
 (defn -main []
-  (println (str "ESTATE:" (simulate-estate (minus (now) (hours 1)) 
-                                           interval-between-events))))
+  (print-stats (simulate-estate (minus (now) (hours 1)) 
+                                interval-between-events)))
