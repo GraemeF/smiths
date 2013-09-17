@@ -22,6 +22,15 @@
        (other)
        (rand-from-set m)))))
 
+(defn start-process [estate timestamp]
+  (let [instance (rand-from-set (:instances estate))
+        process {:instance instance
+                 :nonce (rand-int Integer/MAX_VALUE)}]
+    (emit-event {:event-type "Process started"
+                 :process process })
+    (assoc estate 
+           :processes (union (:processes estate) #{process}))))
+
 (defn add-application-to-device [estate timestamp]
   (let [instance {:application (rand-from-set (:applications estate) generate-application)
                   :device (rand-from-set (:devices estate) generate-device)}]
@@ -44,7 +53,8 @@
 
 (def weighted-events
   {add-application-to-device 2
-   remove-application-from-device 1})
+   remove-application-from-device 1
+   start-process 3})
 
 (defn create-weighted-generator [entry estate timestamp]
   (first {#((key entry) estate timestamp) (val entry)}))
@@ -53,7 +63,8 @@
   (println (:event-count estate) "events comprising" 
            (count (:applications estate)) "applications," 
            (count (:devices estate)) "devices, and" 
-           (count (:instances estate)) "instances.")
+           (count (:instances estate)) "instances of which there are"
+           (count (:processes estate)) "processes.")
   estate)
 
 (defn change-estate [estate timestamp]
@@ -67,6 +78,7 @@
                    :applications #{}
                    :devices #{}
                    :instances #{}
+                   :processes #{}
                    :users #{}})
 
 (defn simulate-estate

@@ -3,8 +3,7 @@
   (:require [smiths.core :refer :all]))
 
 (facts "about `add-application-to-device`"
-       (let [estate 
-             (add-application-to-device empty-estate #inst "2000")]
+       (let [estate (add-application-to-device empty-estate #inst "2000")]
          (fact "it adds an application to the estate"
                (count (:applications estate)) => 1)
          (fact "it adds a device to the estate"
@@ -23,3 +22,8 @@
                       (remove-application-from-device estate 
                                                       #inst "2000"))
                 => #(empty? (:instances %)))))
+
+(facts "about starting a process"
+       (fact "it adds a process to the instance"
+             (start-process empty-estate #inst "2000")
+             => #(= 1 (count (:processes %)))))
