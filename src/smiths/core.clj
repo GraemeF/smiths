@@ -8,9 +8,8 @@
   (:require [clojure.data.generators :as gen])
   (:require [clojurewerkz.eep.emitter :refer [defobserver notify create]]))
 
-(defn emit-event [event]
-  ;;(println (pprint event)))
-  )
+(defn emit-event [event])
+;(defn emit-event [event] (println (pprint event)))
 
 (def interval-between-events (minutes 1))
 
@@ -18,12 +17,17 @@
   {m nil})
 
 (defn rand-from-map
-  ([m] (nth (keys m) (rand (count m))))
-  ([m other] (rand-from-map (conj m (to-weird-map other)))))
+  ([m] (nth (keys m) (rand-int (count m))))
+  ([m other]
+   (let [c (count m)
+         r (rand-int (+ 1 c))]
+     (if (= c r)
+       (other)
+       (rand-from-map m)))))
 
 (defn add-application-to-device [estate timestamp]
-  (let [instance {:application (rand-from-map (:applications estate) (generate-application))
-                  :device (rand-from-map (:devices estate) (generate-device))}]
+  (let [instance {:application (rand-from-map (:applications estate) generate-application)
+                  :device (rand-from-map (:devices estate) generate-device)}]
     (emit-event {:event-type "Application added"
                  :application (:application instance)
                  :device (:device instance)
@@ -37,7 +41,7 @@
   (let [instance (rand-from-map (:instances estate))]
     (emit-event {:event-type "Application removed"
                  :application (:application instance)
-                 :deviceId (:device instance)
+                 :device (:device instance)
                  :timestamp timestamp})
     (let [result (assoc estate
                         :instances (dissoc (:instances estate) instance))]
