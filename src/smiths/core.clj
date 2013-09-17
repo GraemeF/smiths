@@ -43,9 +43,7 @@
                  :application (:application instance)
                  :device (:device instance)
                  :timestamp timestamp})
-    (let [result (assoc estate
-                        :instances (dissoc (:instances estate) instance))]
-      result)))
+    (assoc estate :instances (dissoc (:instances estate) instance))))
 
 (def weighted-events
   {add-application-to-device 2
@@ -74,10 +72,16 @@
                    :instances {}
                    :users {}})
 
-(defn simulate-estate [start interval]
-  (reduce change-estate empty-estate
-          (take 50000 (periodic-seq start interval))))
+(defn simulate-estate
+  ([qty]
+   (simulate-estate (minus (now) (hours 1)) 
+                    interval-between-events
+                    qty))
+  ([start interval qty]
+   (reduce change-estate empty-estate
+           (take qty (periodic-seq start interval)))))
 
 (defn -main []
   (print-stats (time (simulate-estate (minus (now) (hours 1)) 
-                                      interval-between-events))))
+                                      interval-between-events
+                                      100000))))
