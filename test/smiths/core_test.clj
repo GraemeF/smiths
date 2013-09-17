@@ -9,11 +9,11 @@
                                          :instances {}} #inst "2000")]
          (fact "it adds an application to the estate"
                (count (:applications estate)) => 1)
-         (fact "it adds an application to the estate"
+         (fact "the added application looks like an application"
                (keys (first (keys (:applications estate)))) 
-               => (has every? (contains #{:manufacturer
-                                          :name
-                                          :version})))))
+               => (contains #{:manufacturer
+                              :name
+                              :version}))))
 
 (facts "about `remove-application-from-device`"
        (fact "it removes an instance from the estate"

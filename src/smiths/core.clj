@@ -67,7 +67,7 @@
 
 (defn simulate-estate [start interval]
   (reduce change-estate empty-estate
-          (take 1000000 (periodic-seq start interval))))
+          (take 50000 (periodic-seq start interval))))
 
 (defn -main []
   (print-stats (time (simulate-estate (minus (now) (hours 1)) 
