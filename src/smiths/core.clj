@@ -15,7 +15,7 @@
 (def interval-between-events (minutes 1))
 
 (defn to-weird-map [m]
-  {m m})
+  {m nil})
 
 (defn add-application-to-device [estate timestamp]
   (let [instance {:application (rand-nth (keys (conj (:applications estate) (to-weird-map (generate-application)))))
@@ -25,9 +25,9 @@
                  :device (:device instance)
                  :timestamp timestamp})
     (assoc estate 
-           :instances (union (:instances estate) {instance instance})
-           :applications (union (:applications estate) {(:application instance)(:application instance)})
-           :devices (union (:devices estate) {(:device instance)(:device instance)}))))
+           :instances (union (:instances estate) (to-weird-map instance))
+           :applications (union (:applications estate) (to-weird-map (:application instance)))
+           :devices (union (:devices estate) (to-weird-map (:device instance))))))
 
 (defn remove-application-from-device [estate timestamp]
   (let [instance (rand-nth (keys (:instances estate)))]
