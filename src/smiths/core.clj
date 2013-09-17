@@ -64,10 +64,10 @@
     (assoc changed-estate :event-count (+ 1 (:event-count changed-estate)))))
 
 (def empty-estate {:event-count 0
-                   :applications #{}
-                   :devices #{}
-                   :instances #{}
-                   :users #{}})
+                   :applications (sorted-set) 
+                   :devices (sorted-set)
+                   :instances (sorted-set)
+                   :users (sorted-set)})
 
 (defn simulate-estate
   ([qty]
