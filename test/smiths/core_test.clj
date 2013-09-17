@@ -2,8 +2,8 @@
   (:require [midje.sweet :refer [facts fact every-checker contains has]])
   (:require [smiths.core :refer :all]))
 
-(facts "about `add-application-to-device`"
-       (let [estate (add-application-to-device empty-estate #inst "2000")]
+(facts "about `add-instance`"
+       (let [estate (add-instance empty-estate #inst "2000")]
          (fact "it adds an application to the estate"
                (count (:applications estate)) => 1)
          (fact "it adds a device to the estate"
@@ -15,12 +15,11 @@
                => (contains #{:manufacturer :name :version}))
          (facts "adding another instance"
                 (fact "the estate contains 2 instances"
-                      (count (:instances (add-application-to-device estate #inst "2000")))
+                      (count (:instances (add-instance estate #inst "2000")))
                       => 2))
-         (facts "about `remove-application-from-device`"
+         (facts "about `remove-instance`"
                 (fact "it removes an instance from the estate"
-                      (remove-application-from-device estate 
-                                                      #inst "2000"))
+                      (remove-instance estate #inst "2000"))
                 => #(empty? (:instances %)))))
 
 (facts "about starting a process"

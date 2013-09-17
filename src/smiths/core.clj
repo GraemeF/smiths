@@ -40,23 +40,21 @@
     (assoc estate 
            :processes (difference (:processes estate) #{process}))))
 
-(defn add-application-to-device [estate timestamp]
+(defn add-instance [estate timestamp]
   (let [instance {:application (rand-from-set (:applications estate) generate-application)
                   :device (rand-from-set (:devices estate) generate-device)}]
-    (emit-event {:event-type "Application added"
-                 :application (:application instance)
-                 :device (:device instance)
+    (emit-event {:event-type "Instance added"
+                 :instance instance
                  :timestamp timestamp})
     (assoc estate 
            :instances (union (:instances estate) #{instance})
            :applications (union (:applications estate) #{(:application instance)})
            :devices (union (:devices estate) #{(:device instance)}))))
 
-(defn remove-application-from-device [estate timestamp]
+(defn remove-instance [estate timestamp]
   (let [instance (rand-from-set (:instances estate))]
-    (emit-event {:event-type "Application removed"
-                 :application (:application instance)
-                 :device (:device instance)
+    (emit-event {:event-type "Instance removed"
+                 :instance instance
                  :timestamp timestamp})
     (assoc estate :instances (difference (:instances estate) #{instance}))))
 
