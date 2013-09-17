@@ -17,9 +17,13 @@
 (defn to-weird-map [m]
   {m nil})
 
+(defn rand-from-map
+  ([m] (nth (keys m) (rand (count m))))
+  ([m other] (rand-from-map (conj m (to-weird-map other)))))
+
 (defn add-application-to-device [estate timestamp]
-  (let [instance {:application (rand-nth (keys (conj (:applications estate) (to-weird-map (generate-application)))))
-                  :device (rand-nth (keys (conj (:devices estate) (to-weird-map (generate-device)))))}]
+  (let [instance {:application (rand-from-map (:applications estate) (generate-application))
+                  :device (rand-from-map (:devices estate) (generate-device))}]
     (emit-event {:event-type "Application added"
                  :application (:application instance)
                  :device (:device instance)
@@ -30,7 +34,7 @@
            :devices (union (:devices estate) (to-weird-map (:device instance))))))
 
 (defn remove-application-from-device [estate timestamp]
-  (let [instance (rand-nth (keys (:instances estate)))]
+  (let [instance (rand-from-map (:instances estate))]
     (emit-event {:event-type "Application removed"
                  :application (:application instance)
                  :deviceId (:device instance)
