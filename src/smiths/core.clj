@@ -13,37 +13,34 @@
 
 (def interval-between-events (minutes 1))
 
-(defn to-weird-map [m]
-  {m nil})
-
-(defn rand-from-map
-  ([m] (nth (keys m) (rand-int (count m))))
+(defn rand-from-set
+  ([m] (nth (seq m) (rand-int (count m))))
   ([m other]
    (let [c (count m)
          r (rand-int (+ 1 c))]
      (if (= c r)
        (other)
-       (rand-from-map m)))))
+       (rand-from-set m)))))
 
 (defn add-application-to-device [estate timestamp]
-  (let [instance {:application (rand-from-map (:applications estate) generate-application)
-                  :device (rand-from-map (:devices estate) generate-device)}]
+  (let [instance {:application (rand-from-set (:applications estate) generate-application)
+                  :device (rand-from-set (:devices estate) generate-device)}]
     (emit-event {:event-type "Application added"
                  :application (:application instance)
                  :device (:device instance)
                  :timestamp timestamp})
     (assoc estate 
-           :instances (union (:instances estate) (to-weird-map instance))
-           :applications (union (:applications estate) (to-weird-map (:application instance)))
-           :devices (union (:devices estate) (to-weird-map (:device instance))))))
+           :instances (union (:instances estate) #{instance})
+           :applications (union (:applications estate) #{(:application instance)})
+           :devices (union (:devices estate) #{(:device instance)}))))
 
 (defn remove-application-from-device [estate timestamp]
-  (let [instance (rand-from-map (:instances estate))]
+  (let [instance (rand-from-set (:instances estate))]
     (emit-event {:event-type "Application removed"
                  :application (:application instance)
                  :device (:device instance)
                  :timestamp timestamp})
-    (assoc estate :instances (dissoc (:instances estate) instance))))
+    (assoc estate :instances (difference (:instances estate) #{instance}))))
 
 (def weighted-events
   {add-application-to-device 2
@@ -67,10 +64,10 @@
     (assoc changed-estate :event-count (+ 1 (:event-count changed-estate)))))
 
 (def empty-estate {:event-count 0
-                   :applications {}
-                   :devices {}
-                   :instances {}
-                   :users {}})
+                   :applications #{}
+                   :devices #{}
+                   :instances #{}
+                   :users #{}})
 
 (defn simulate-estate
   ([qty]
