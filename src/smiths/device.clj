@@ -6,5 +6,7 @@
   [mean-size]
   #(dec (geometric (/ 1 mean-size))))
 
+(defrecord Device [id])
+
 (defn generate-device []
-  {:id (string printable-ascii-char (geometric-sizer 10))})
+  (Device. (string printable-ascii-char (geometric-sizer 10))))

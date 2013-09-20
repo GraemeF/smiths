@@ -22,10 +22,13 @@
        (other)
        (nth (seq m) r)))))
 
+(defrecord InstanceProcess [instance nonce])
+(defrecord Instance [application device])
+
 (defn start-process [estate timestamp]
   (let [instance (rand-from-set (:instances estate))
-        process {:instance instance
-                 :nonce (rand-int Integer/MAX_VALUE)}]
+        process (InstanceProcess. instance
+                                  (rand-int Integer/MAX_VALUE))]
     (emit-event {:event-type "Process started"
                  :process process
                  :timestamp timestamp})
@@ -41,8 +44,8 @@
            :processes (difference (:processes estate) #{process}))))
 
 (defn add-instance [estate timestamp]
-  (let [instance {:application (rand-from-set (:applications estate) generate-application)
-                  :device (rand-from-set (:devices estate) generate-device)}]
+  (let [instance (Instance. (rand-from-set (:applications estate) generate-application)
+                            (rand-from-set (:devices estate) generate-device))]
     (emit-event {:event-type "Instance added"
                  :instance instance
                  :timestamp timestamp})

@@ -5,7 +5,9 @@
   [mean-size]
   #(dec (geometric (/ 1 mean-size))))
 
+(defrecord Application [manufacturer name version])
+
 (defn generate-application []
-  {:manufacturer (string printable-ascii-char (geometric-sizer 40))
-   :name (string printable-ascii-char (geometric-sizer 50))
-   :version (string printable-ascii-char (geometric-sizer 8))})
+  (Application. (string printable-ascii-char (geometric-sizer 40))
+                (string printable-ascii-char (geometric-sizer 50))
+                (string printable-ascii-char (geometric-sizer 8))))
