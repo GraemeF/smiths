@@ -20,7 +20,7 @@
          r (rand-int (+ 1 c))]
      (if (= c r)
        (other)
-       (rand-from-set m)))))
+       (nth (seq m) r)))))
 
 (defn start-process [estate timestamp]
   (let [instance (rand-from-set (:instances estate))
