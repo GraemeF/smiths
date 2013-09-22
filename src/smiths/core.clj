@@ -46,13 +46,15 @@
 (defn add-instance [estate timestamp]
   (let [instance (Instance. (rand-from-set (:applications estate) generate-application)
                             (rand-from-set (:devices estate) generate-device))]
-    (emit-event {:event-type "Instance added"
-                 :instance instance
-                 :timestamp timestamp})
-    (assoc estate 
-           :instances (union (:instances estate) #{instance})
-           :applications (union (:applications estate) #{(:application instance)})
-           :devices (union (:devices estate) #{(:device instance)}))))
+    (if-not (contains? (:instances estate) instance)
+      (do (emit-event {:event-type "Instance added"
+                       :instance instance
+                       :timestamp timestamp})
+          (assoc estate 
+                 :instances (union (:instances estate) #{instance})
+                 :applications (union (:applications estate) #{(:application instance)})
+                 :devices (union (:devices estate) #{(:device instance)})))
+      (recur estate timestamp))))
 
 (defn remove-instance [estate timestamp]
   (let [instance (rand-from-set (:instances estate))]
