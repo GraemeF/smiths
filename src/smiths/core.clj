@@ -64,8 +64,8 @@
     (assoc estate :instances (difference (:instances estate) #{instance}))))
 
 (def weighted-events
-  {add-application-to-device 2
-   remove-application-from-device 1
+  {add-instance 2
+   remove-instance 1
    stop-process 3 
    start-process 4})
 
