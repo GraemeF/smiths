@@ -1,5 +1,6 @@
 (ns smiths.core-test
   (:require [midje.sweet :refer [facts fact every-checker contains has]])
+  (:require [smiths.process :refer [start-process]])
   (:require [smiths.core :refer :all]))
 
 (facts "about `add-instance`"

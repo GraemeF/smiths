@@ -3,45 +3,17 @@
   (:require [clojure.set :refer [union difference]])
   (:require [clj-time.core :refer [minus now hours minutes]])
   (:require [clj-time.periodic :refer [periodic-seq]])
+  (:require [smiths.set :refer [rand-from-set]])
+  (:require [smiths.event :refer [emit-event]])
   (:require [smiths.device :refer [generate-device]])
   (:require [smiths.application :refer [generate-application]])
+  (:require [smiths.process :refer :all])
   (:require [clojure.data.generators :as gen])
   (:require [clojurewerkz.eep.emitter :refer [defobserver notify create]]))
 
-(defn emit-event [event])
-;(defn emit-event [event] (println (pprint event)))
-
 (def interval-between-events (minutes 1))
 
-(defn rand-from-set
-  ([m] (nth (seq m) (rand-int (count m))))
-  ([m other]
-   (let [c (count m)
-         r (rand-int (+ 1 c))]
-     (if (= c r)
-       (other)
-       (nth (seq m) r)))))
-
-(defrecord InstanceProcess [instance nonce])
 (defrecord Instance [application device])
-
-(defn start-process [estate timestamp]
-  (let [instance (rand-from-set (:instances estate))
-        process (InstanceProcess. instance
-                                  (rand-int Integer/MAX_VALUE))]
-    (emit-event {:event-type "Process started"
-                 :process process
-                 :timestamp timestamp})
-    (assoc estate 
-           :processes (union (:processes estate) #{process}))))
-
-(defn stop-process [estate timestamp]
-  (let [process (rand-from-set (:processes estate))]
-    (emit-event {:event-type "Process stopped"
-                 :process process
-                 :timestamp timestamp})
-    (assoc estate 
-           :processes (difference (:processes estate) #{process}))))
 
 (defn add-instance [estate timestamp]
   (let [instance (Instance. (rand-from-set (:applications estate) generate-application)
