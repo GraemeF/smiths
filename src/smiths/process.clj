@@ -1,5 +1,6 @@
 (ns smiths.process
   (:require [clojure.set :refer [union difference]])
+  (:require [smiths.instance :refer :all])
   (:require [smiths.event :refer [emit-event]])
   (:require [smiths.set :refer [rand-from-set]]))
 

@@ -1,5 +1,6 @@
 (ns smiths.process-test
   (:require [midje.sweet :refer [facts fact]])
+  (:require [smiths.core :refer [empty-estate]])
   (:require [smiths.process :refer [start-process]]))
 
 (facts "about starting a process"

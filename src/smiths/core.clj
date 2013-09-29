@@ -7,33 +7,12 @@
   (:require [smiths.event :refer [emit-event]])
   (:require [smiths.device :refer [generate-device]])
   (:require [smiths.application :refer [generate-application]])
-  (:require [smiths.process :refer :all])
+  (:require [smiths.instance :refer [add-instance remove-instance]])
+  (:require [smiths.process :refer [start-process stop-process]])
   (:require [clojure.data.generators :as gen])
   (:require [clojurewerkz.eep.emitter :refer [defobserver notify create]]))
 
 (def interval-between-events (minutes 1))
-
-(defrecord Instance [application device])
-
-(defn add-instance [estate timestamp]
-  (let [instance (Instance. (rand-from-set (:applications estate) generate-application)
-                            (rand-from-set (:devices estate) generate-device))]
-    (if-not (contains? (:instances estate) instance)
-      (do (emit-event {:event-type "Instance added"
-                       :instance instance
-                       :timestamp timestamp})
-          (assoc estate 
-                 :instances (union (:instances estate) #{instance})
-                 :applications (union (:applications estate) #{(:application instance)})
-                 :devices (union (:devices estate) #{(:device instance)})))
-      (recur estate timestamp))))
-
-(defn remove-instance [estate timestamp]
-  (let [instance (rand-from-set (:instances estate))]
-    (emit-event {:event-type "Instance removed"
-                 :instance instance
-                 :timestamp timestamp})
-    (assoc estate :instances (difference (:instances estate) #{instance}))))
 
 (def weighted-events
   {add-instance 2

@@ -1,6 +1,7 @@
-(ns smiths.core-test
+(ns smiths.instance-test
   (:require [midje.sweet :refer [facts fact contains]])
-  (:require [smiths.core :refer [add-instance remove-instance empty-estate]]))
+  (:require [smiths.instance :refer [add-instance remove-instance]])
+  (:require [smiths.core :refer [empty-estate]]))
 
 (facts "about `add-instance`"
        (let [estate (add-instance empty-estate #inst "2000")]
