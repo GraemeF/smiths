@@ -57,7 +57,7 @@
     (print-stats estate))
   (let [changed-estate (gen/weighted (map #(create-weighted-generator % estate timestamp) 
                                           weighted-events))]
-    (assoc changed-estate :event-count (+ 1 (:event-count changed-estate)))))
+    (assoc changed-estate :event-count (inc (:event-count changed-estate)))))
 
 (def empty-estate {:event-count 0
                    :applications #{}
